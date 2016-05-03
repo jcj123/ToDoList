@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.qs.jcj.addlistview.view.AddView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/av"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <EditText
+        android:id="@+id/et_add"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <ImageView
+        android:id="@+id/iv"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:background="@drawable/ic_important_devices_black_24dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="100dp"
+        />
+    <TextView
+        android:id="@+id/tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="下拉有惊喜哟..."
+        android:gravity="center"
+        />
+</com.qs.jcj.addlistview.view.AddView>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/main"
+            android:icon="@drawable/main"
+            android:title="首页" />
+        <item
+            android:id="@+id/nav_gallery"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="按月查询" />
+        <item
+            android:id="@+id/nav_slideshow"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="按天查询" />
+        <item
+            android:id="@+id/nav_manage"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Tools" />
+    </group>
+
+    <item android:title="自定义">
+        <menu>
+            <item
+                android:id="@+id/changeItem"
+                android:icon="@drawable/ic_menu_share"
+                android:title="切换主题" />
+            <item
+                android:id="@+id/setting"
+                android:icon="@drawable/ic_menu_send"
+                android:title="设置" />
+        </menu>
+    </item>
+
+</menu>
