@@ -9,9 +9,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -21,18 +23,21 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.qs.jcj.addlistview.adapter.ToDoAdapter;
 import com.qs.jcj.addlistview.dao.ToDoDao;
 import com.qs.jcj.addlistview.domain.Item;
+import com.qs.jcj.addlistview.utils.AnimationUtils;
 import com.qs.jcj.addlistview.view.ItemView;
+import com.qs.jcj.addlistview.view.NestListView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
-    private ListView myListView;
+    private NestListView myListView;
     private List<Item> itemlist = new ArrayList<>();
     private ToDoAdapter myAdapter;
     private ToDoDao dao;
@@ -43,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Button search;
     private Button share;
     private boolean isMenuOpen;//fab的menu是否已经打开
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,80 +79,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                int radius = 400;
-                int total = 4;
                 if (!isMenuOpen) {
-                    isMenuOpen = true;
-                    openCircleAnimation(add_item, 0, total, radius);
-                    openCircleAnimation(question, 3, total, radius);
-                    openCircleAnimation(search, 2, total, radius);
-                    openCircleAnimation(share, 1, total, radius);
+                    openMenu();
                 } else {
-                    isMenuOpen = false;
-                    closeCircleAnimation(add_item, 0, total, radius);
-                    closeCircleAnimation(question, 3, total, radius);
-                    closeCircleAnimation(search, 2, total, radius);
-                    closeCircleAnimation(share, 1, total, radius);
+                    closeMenu();
                 }
             }
         });
-        animator.setDuration(400);
+        animator.setDuration(300);
         animator.setInterpolator(new BounceInterpolator());
         animator.start();
     }
 
     /**
-     * 点击悬浮的fab按钮后，关闭圆弧形动画，包括执行的各种按钮
+     * 打开fab 菜单
      */
-    private void closeCircleAnimation(View view, int index, int total, int radius) {
-        double degree = 90 * index / (total - 1);
-        final double radians = Math.toRadians(degree);
-        final float translationY = (float) (radius * Math.cos(radians));
-        final float translationX = (float) (radius * Math.sin(radians));
-        if (view.getVisibility() != View.VISIBLE) {
-            view.setVisibility(View.VISIBLE);
-        }
-        AnimatorSet set = new AnimatorSet();
-        //包含平移、缩放和透明度动画
-        set.playTogether(
-                ObjectAnimator.ofFloat(view, "translationX", -translationX, 0),
-                ObjectAnimator.ofFloat(view, "translationY", -translationY, 0),
-                ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f),
-                ObjectAnimator.ofFloat(view, "scaleY", 1f, 0f),
-                ObjectAnimator.ofFloat(view, "alpha", 1f, 0));
-        //动画周期为 500ms
-        set.setDuration(1 * 500).start();
+    private void openMenu() {
+        isMenuOpen = true;
+        int radius = 400;
+        int total = 4;
+        AnimationUtils.openCircleAnimation(add_item, 0, total, radius);
+        AnimationUtils.openCircleAnimation(question, 3, total, radius);
+        AnimationUtils.openCircleAnimation(search, 2, total, radius);
+        AnimationUtils.openCircleAnimation(share, 1, total, radius);
     }
 
     /**
-     * 点击悬浮的fab按钮后，弹出圆弧形动画，包括执行的各种按钮
+     * 关闭fab 菜单
      */
-    private void openCircleAnimation(View view, int index, int total, int radius) {
-        double degree = 90 * index / (total - 1);
-        final double radians = Math.toRadians(degree);
-        final float translationY = (float) (radius * Math.cos(radians));
-        final float translationX = (float) (radius * Math.sin(radians));
-        if (view.getVisibility() != View.VISIBLE) {
-            view.setVisibility(View.VISIBLE);
-        }
-        AnimatorSet set = new AnimatorSet();
-        //包含平移、缩放和透明度动画
-        set.playTogether(
-                ObjectAnimator.ofFloat(view, "translationX", 0, -translationX),
-                ObjectAnimator.ofFloat(view, "translationY", 0, -translationY),
-                ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f),
-                ObjectAnimator.ofFloat(view, "scaleY", 0f, 1f),
-                ObjectAnimator.ofFloat(view, "alpha", 0f, 1));
-        //动画周期为 500ms
-        set.setDuration(1 * 500).start();
-
+    private void closeMenu() {
+        isMenuOpen = false;
+        int radius = 400;
+        int total = 4;
+        AnimationUtils.closeCircleAnimation(add_item, 0, total, radius);
+        AnimationUtils.closeCircleAnimation(question, 3, total, radius);
+        AnimationUtils.closeCircleAnimation(search, 2, total, radius);
+        AnimationUtils.closeCircleAnimation(share, 1, total, radius);
     }
+
 
     /**
      * 初始化UI
      */
     private void initUI() {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         add_item = (Button) findViewById(R.id.add_item);
@@ -154,16 +129,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         search = (Button) findViewById(R.id.search);
         share = (Button) findViewById(R.id.share);
 
-        myListView = (ListView) findViewById(R.id.lv);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.main);
         navigationView.setNavigationItemSelectedListener(this);
+        myListView = (NestListView) findViewById(R.id.lv);
+
     }
 
     private void initData() {
         dao = new ToDoDao(this);
         itemlist = dao.findAll();
-
+        System.out.println("itemlist="+itemlist);
         if (myAdapter == null) {
             myAdapter = new ToDoAdapter(itemlist, this, dao);
         }
@@ -185,16 +163,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.main:
-                break;
-
-        }
-        return false;
-    }
-
     /**
      * fab菜单打开后各个按钮的点击时间
      *
@@ -206,7 +174,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.add_item:
                 Intent intent = new Intent(MainActivity.this, AddActivity.class);
                 startActivityForResult(intent, 1);
+                closeMenu();
                 break;
         }
+    }
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.setting:
+                Toast.makeText(this, "setting", Toast.LENGTH_SHORT).show();
+                break;
+
+        }
+        return true;
     }
 }
