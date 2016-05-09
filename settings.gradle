@@ -1,2 +1,2 @@
-include ':app', ':navigationtest', ':ToDo!!'
+include ':app', ':navigationtest', ':ToDo!!', ':datepickerfragmentdemo'
 project(':ToDo!!').projectDir = new File('addlistview')

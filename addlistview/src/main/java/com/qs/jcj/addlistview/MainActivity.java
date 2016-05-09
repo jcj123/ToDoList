@@ -2,40 +2,43 @@ package com.qs.jcj.addlistview;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.animation.BounceInterpolator;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.DatePicker;
 import android.widget.Toast;
 
 import com.qs.jcj.addlistview.adapter.ToDoAdapter;
 import com.qs.jcj.addlistview.dao.ToDoDao;
 import com.qs.jcj.addlistview.domain.Item;
 import com.qs.jcj.addlistview.utils.AnimationUtils;
-import com.qs.jcj.addlistview.view.ItemView;
 import com.qs.jcj.addlistview.view.NestListView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener,
+        NavigationView.OnNavigationItemSelectedListener {
+
+    private final static int REQUEST_ADD = 1;
 
     private NestListView myListView;
     private List<Item> itemlist = new ArrayList<>();
@@ -49,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button share;
     private boolean isMenuOpen;//fab的menu是否已经打开
     private DrawerLayout drawerLayout;
+    private CollapsingToolbarLayout collapsingToolbar;//可缩放打开的工具栏
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +64,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initLinstener() {
+        //悬浮按钮的点击时间
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //执行动画
                 fabAnimation();
+                //同时打开半透明的activity界面
+//                finish();
+//                startActivity(new Intent(MainActivity.this,MainActivity.class));
             }
         });
         add_item.setOnClickListener(this);
@@ -107,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 关闭fab 菜单
      */
-    private void closeMenu() {
+    protected void closeMenu() {
         isMenuOpen = false;
         int radius = 400;
         int total = 4;
@@ -130,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         share = (Button) findViewById(R.id.share);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.CollapsingToolbar);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.main);
@@ -139,9 +150,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initData() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        final String createDate = sdf.format(new Date());
+        collapsingToolbar.setTitle(createDate);
         dao = new ToDoDao(this);
-        itemlist = dao.findAll();
-        System.out.println("itemlist="+itemlist);
+        itemlist = dao.findByDay(createDate);
         if (myAdapter == null) {
             myAdapter = new ToDoAdapter(itemlist, this, dao);
         }
@@ -151,20 +164,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            final String item = data.getStringExtra("item");
-            if (!TextUtils.isEmpty(item)) {
-                Item i = new Item(item, 0);
-                itemlist.add(i);
-                dao.insert(item);
-                if (myAdapter != null) {
-                    myAdapter.notifyDataSetChanged();
-                }
+            switch (requestCode) {
+                case REQUEST_ADD:
+                    final String item = data.getStringExtra("item");
+                    if (!TextUtils.isEmpty(item)) {
+                        Item i = new Item(item, 0);
+                        itemlist.add(i);
+                        dao.insert(item);
+                        if (myAdapter != null) {
+                            myAdapter.notifyDataSetChanged();
+                        }
+                    }
+                    break;
             }
         }
     }
 
     /**
-     * fab菜单打开后各个按钮的点击时间
+     * fab菜单打开后各个按钮的点击事件
      *
      * @param v
      */
@@ -173,19 +190,56 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.add_item:
                 Intent intent = new Intent(MainActivity.this, AddActivity.class);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, REQUEST_ADD);
                 closeMenu();
                 break;
         }
     }
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.setting:
                 Toast.makeText(this, "setting", Toast.LENGTH_SHORT).show();
+                drawerLayout.closeDrawers();
                 break;
+            case R.id.search_day:
+                drawerLayout.closeDrawers();
+                showDatePickerDialog();
 
+                break;
+            case R.id.search_month:
+                drawerLayout.closeDrawers();
+                break;
         }
         return true;
     }
+
+    class DatePickerListener implements DatePickerDialog.OnDateSetListener {
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            monthOfYear = monthOfYear + 1;
+            Toast.makeText(MainActivity.this, year + "-" + monthOfYear + "-" + dayOfMonth, Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(MainActivity.this, MainActivity.class));
+        }
+    }
+    /**
+     * 根据指定日期显示todo条目
+     *
+     */
+
+
+    /**
+     * 展示日期选择dialog
+     */
+    private void showDatePickerDialog() {
+        final Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        new DatePickerDialog(MainActivity.this, new DatePickerListener(), year, month, day).show();
+    }
+
+
 }

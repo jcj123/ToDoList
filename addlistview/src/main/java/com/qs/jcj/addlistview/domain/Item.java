@@ -16,6 +16,13 @@ public class Item {
         this.isCompleted = isCompleted;
     }
 
+    public Item(int id, String name, int isCompleted, String createDate) {
+        this.id = id;
+        this.name = name;
+        this.isCompleted = isCompleted;
+        this.createDate = createDate;
+    }
+
     public int getId() {
         return id;
     }
@@ -42,5 +49,15 @@ public class Item {
 
     public void setIsCompleted(int isCompleted) {
         this.isCompleted = isCompleted;
+    }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", isCompleted=" + isCompleted +
+                ", createDate='" + createDate + '\'' +
+                '}';
     }
 }

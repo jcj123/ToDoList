@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/addlistview/ToDo!!.iml" filepath="$PROJECT_DIR$/addlistview/ToDo!!.iml" />
       <module fileurl="file://$PROJECT_DIR$/ToDoList.iml" filepath="$PROJECT_DIR$/ToDoList.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/datepickerfragmentdemo/datepickerfragmentdemo.iml" filepath="$PROJECT_DIR$/datepickerfragmentdemo/datepickerfragmentdemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/navigationtest/navigationtest.iml" filepath="$PROJECT_DIR$/navigationtest/navigationtest.iml" />
     </modules>
   </component>

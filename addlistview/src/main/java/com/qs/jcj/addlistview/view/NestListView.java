@@ -11,6 +11,7 @@ import android.widget.ListView;
 
 /**
  * Created by jcj on 16/5/5.
+ * 重写ListView，解决在NestedScrollView下只能显示一条item的问题
  */
 public class NestListView extends ListView implements View.OnTouchListener,
         AbsListView.OnScrollListener {

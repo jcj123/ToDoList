@@ -12,6 +12,7 @@
         android:layout_height="200dp">
 
         <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/CollapsingToolbar"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             app:title="MyToolBar"

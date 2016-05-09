@@ -10,15 +10,18 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class ToDoDaoHelper extends SQLiteOpenHelper{
     public ToDoDaoHelper(Context context) {
-        super(context, "toDo.db", null, 1);
+        super(context, "toDo.db", null, 2);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table todolist (_id integer primary key autoincrement,content char,isCompleted integer)");
+        db.execSQL("create table todolist (_id integer primary key autoincrement,content char," +
+                "isCompleted integer,createdate char)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("drop table todolist");
+        onCreate(db);
     }
 }
