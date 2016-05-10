@@ -27,6 +27,7 @@ import com.qs.jcj.addlistview.adapter.ToDoAdapter;
 import com.qs.jcj.addlistview.dao.ToDoDao;
 import com.qs.jcj.addlistview.domain.Item;
 import com.qs.jcj.addlistview.utils.AnimationUtils;
+import com.qs.jcj.addlistview.utils.ViewUtils;
 import com.qs.jcj.addlistview.view.NestListView;
 
 import java.text.SimpleDateFormat;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean isMenuOpen;//fab的menu是否已经打开
     private DrawerLayout drawerLayout;
     private CollapsingToolbarLayout collapsingToolbar;//可缩放打开的工具栏
+    private ViewUtils viewUtils;
 
 
     @Override
@@ -139,6 +141,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         search = (Button) findViewById(R.id.search);
         share = (Button) findViewById(R.id.share);
 
+        viewUtils = new ViewUtils(this);
+
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.CollapsingToolbar);
 
@@ -205,41 +209,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.search_day:
                 drawerLayout.closeDrawers();
-                showDatePickerDialog();
-
+                viewUtils.showDatePickerDialog(true);
                 break;
             case R.id.search_month:
                 drawerLayout.closeDrawers();
+                viewUtils.showDatePickerDialog(false);
                 break;
         }
         return true;
     }
-
-    class DatePickerListener implements DatePickerDialog.OnDateSetListener {
-
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            monthOfYear = monthOfYear + 1;
-            Toast.makeText(MainActivity.this, year + "-" + monthOfYear + "-" + dayOfMonth, Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(MainActivity.this, MainActivity.class));
-        }
-    }
-    /**
-     * 根据指定日期显示todo条目
-     *
-     */
-
-
-    /**
-     * 展示日期选择dialog
-     */
-    private void showDatePickerDialog() {
-        final Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-        new DatePickerDialog(MainActivity.this, new DatePickerListener(), year, month, day).show();
-    }
-
-
+    
 }

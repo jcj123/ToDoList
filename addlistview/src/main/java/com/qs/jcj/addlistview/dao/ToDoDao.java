@@ -74,12 +74,33 @@ public class ToDoDao {
         db.close();
     }
 
+    /**
+     * 按日查询
+     * @param day
+     * @return
+     */
     public List<Item> findByDay(String day) {
         List<Item> list = new ArrayList<>();
         db = helper.getReadableDatabase();
 
         Cursor cursor = db.query("todolist", new String[]{"_id", "content", "isCompleted", "createdate"},
                 "createdate=?", new String[]{day}, null, null, null);
+        while (cursor.moveToNext()) {
+            final int id = cursor.getInt(0);
+            final String text = cursor.getString(1);
+            final int isCompleted = cursor.getInt(2);
+            final String createDate = cursor.getString(3);
+            Item item = new Item(id, text, isCompleted, createDate);
+            list.add(item);
+        }
+        db.close();
+        return list;
+    }
+    public List<Item> findByMonth(String day) {
+        List<Item> list = new ArrayList<>();
+        db = helper.getReadableDatabase();
+        System.out.println("select * from todolist where createdate LIKE"+"'"+day+"'");
+        Cursor cursor = db.rawQuery("select * from todolist where createdate LIKE"+"'"+day+"'",null);
         while (cursor.moveToNext()) {
             final int id = cursor.getInt(0);
             final String text = cursor.getString(1);
