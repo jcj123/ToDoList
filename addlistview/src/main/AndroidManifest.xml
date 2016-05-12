@@ -19,11 +19,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddActivity" />
-        <activity android:name=".BaseActivity" />
         <activity
             android:name=".TransparentActivity"
             android:theme="@style/transparent" />
-        <activity android:name=".DayActivity" />
         <activity android:name=".MonthActivity"></activity>
     </application>
 

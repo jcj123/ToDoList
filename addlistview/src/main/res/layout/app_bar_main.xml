@@ -7,38 +7,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.qs.jcj.addlistview.MainActivity">
-    <android.support.design.widget.AppBarLayout
+    <!--用来装载主界面、按日查询界面、按月查询界面的帧布局-->
+    <FrameLayout
+        android:id="@+id/item_fl"
         android:layout_width="match_parent"
-        android:layout_height="200dp">
-
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/CollapsingToolbar"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            app:title="MyToolBar"
-            app:collapsedTitleGravity="right"
-            app:expandedTitleGravity="left|bottom"
-            app:contentScrim="@color/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlwaysCollapsed|exitUntilCollapsed">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/food"
-                app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.5"/>
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/tool_bar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin">
-            </android.support.v7.widget.Toolbar>
-        </android.support.design.widget.CollapsingToolbarLayout>
-    </android.support.design.widget.AppBarLayout>
-
-    <include layout="@layout/content_main" />
-
+        android:layout_height="match_parent"
+        ></FrameLayout>
+<!--悬浮按钮 添加新条目-->
     <include layout="@layout/floating_action_button"></include>
 </android.support.design.widget.CoordinatorLayout>

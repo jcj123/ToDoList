@@ -3,16 +3,13 @@ package com.qs.jcj.addlistview;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -20,42 +17,37 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.widget.Button;
-import android.widget.DatePicker;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.qs.jcj.addlistview.adapter.ToDoAdapter;
-import com.qs.jcj.addlistview.dao.ToDoDao;
 import com.qs.jcj.addlistview.domain.Item;
+import com.qs.jcj.addlistview.fragments.DayFragment;
+import com.qs.jcj.addlistview.fragments.MainFragment;
+import com.qs.jcj.addlistview.fragments.MonthFragment;
 import com.qs.jcj.addlistview.utils.AnimationUtils;
 import com.qs.jcj.addlistview.utils.ViewUtils;
-import com.qs.jcj.addlistview.view.NestListView;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
         NavigationView.OnNavigationItemSelectedListener {
 
     private final static int REQUEST_ADD = 1;
 
-    private NestListView myListView;
-    private List<Item> itemlist = new ArrayList<>();
-    private ToDoAdapter myAdapter;
-    private ToDoDao dao;
-
-    private FloatingActionButton fab;
-    private Button add_item;
-    private Button question;
-    private Button search;
-    private Button share;
+    private FrameLayout fab_fl;//装载悬浮按钮的帧界面
+    private FloatingActionButton fab;//加号悬浮按钮
+    private Button add_item;//添加新条目
+    private Button question;//报告BUG
+    private Button search;//搜索条目
+    private Button share;//分享软件
     private boolean isMenuOpen;//fab的menu是否已经打开
-    private DrawerLayout drawerLayout;
-    private CollapsingToolbarLayout collapsingToolbar;//可缩放打开的工具栏
+    private DrawerLayout drawerLayout;//侧拉菜单栏
     private ViewUtils viewUtils;
 
+    public MainFragment mainFragment;
+    public DayFragment dayFragment;
+
+    private FragmentStatus currentStatus = FragmentStatus.Main;
+    public SharedPreferences sp;
+    private MonthFragment monthFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +64,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View view) {
                 //执行动画
                 fabAnimation();
-                //同时打开半透明的activity界面
-//                finish();
-//                startActivity(new Intent(MainActivity.this,MainActivity.class));
             }
         });
         add_item.setOnClickListener(this);
@@ -135,6 +124,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void initUI() {
         setContentView(R.layout.activity_main);
+
+        sp = getSharedPreferences("config", MODE_PRIVATE);
+        fab_fl = (FrameLayout) findViewById(R.id.fab_fl);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         add_item = (Button) findViewById(R.id.add_item);
         question = (Button) findViewById(R.id.question);
@@ -144,25 +136,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         viewUtils = new ViewUtils(this);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.CollapsingToolbar);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.main);
         navigationView.setNavigationItemSelectedListener(this);
-        myListView = (NestListView) findViewById(R.id.lv);
 
     }
 
-    private void initData() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        final String createDate = sdf.format(new Date());
-        collapsingToolbar.setTitle(createDate);
-        dao = new ToDoDao(this);
-        itemlist = dao.findByDay(createDate);
-        if (myAdapter == null) {
-            myAdapter = new ToDoAdapter(itemlist, this, dao);
+    /**
+     * 根据用户点击的不用选项显示不同的Fragment界面（main,day,month）
+     */
+    public void initData() {
+        mainFragment = new MainFragment();
+        dayFragment = new DayFragment();
+        monthFragment = new MonthFragment();
+        final FragmentManager fm = getSupportFragmentManager();
+        final FragmentTransaction transaction = fm.beginTransaction();
+        switch (currentStatus) {
+            case Main:
+                fab_fl.setVisibility(View.VISIBLE);
+                transaction.replace(R.id.item_fl, mainFragment, "MAINFRAGMENT");
+                transaction.addToBackStack(null);
+                transaction.commit();
+                break;
+            case Day:
+                fab_fl.setVisibility(View.INVISIBLE);
+                transaction.replace(R.id.item_fl, dayFragment, "DAYFRAGMENT");
+                transaction.addToBackStack(null);
+                transaction.commit();
+                break;
+            case Month:
+                fab_fl.setVisibility(View.INVISIBLE);
+                transaction.replace(R.id.item_fl, monthFragment, "MONTHFRAGMENT");
+                transaction.addToBackStack(null);
+                transaction.commit();
+                break;
         }
-        myListView.setAdapter(myAdapter);
     }
 
     @Override
@@ -173,10 +182,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     final String item = data.getStringExtra("item");
                     if (!TextUtils.isEmpty(item)) {
                         Item i = new Item(item, 0);
-                        itemlist.add(i);
-                        dao.insert(item);
-                        if (myAdapter != null) {
-                            myAdapter.notifyDataSetChanged();
+                        mainFragment.itemlist.add(i);
+                        mainFragment.dao.insert(item);
+                        if (mainFragment.toDoAdapter != null) {
+                            mainFragment.toDoAdapter.notifyDataSetChanged();
                         }
                     }
                     break;
@@ -207,16 +216,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "setting", Toast.LENGTH_SHORT).show();
                 drawerLayout.closeDrawers();
                 break;
+            case R.id.main:
+                currentStatus = FragmentStatus.Main;
+                initData();
+                drawerLayout.closeDrawers();
+                break;
             case R.id.search_day:
                 drawerLayout.closeDrawers();
                 viewUtils.showDatePickerDialog(true);
+                currentStatus = FragmentStatus.Day;
                 break;
             case R.id.search_month:
                 drawerLayout.closeDrawers();
                 viewUtils.showDatePickerDialog(false);
+                currentStatus = FragmentStatus.Month;
                 break;
         }
         return true;
     }
-    
+
+    public static enum FragmentStatus {
+        Main, Day, Month
+    }
 }
