@@ -20,4 +20,15 @@ public class MyCoordinatorLayout extends CoordinatorLayout{
         super(context, attrs, defStyleAttr);
     }
 
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+    }
 }

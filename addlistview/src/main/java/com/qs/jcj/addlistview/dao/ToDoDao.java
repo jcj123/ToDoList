@@ -26,15 +26,12 @@ public class ToDoDao {
         helper = new ToDoDaoHelper(context);
     }
 
-    public void insert(String text) {
+    public void insert(Item item) {
         db = helper.getReadableDatabase();
         ContentValues values = new ContentValues();
-        values.put("content", text);
-        values.put("isCompleted", 0);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        final String createDate = sdf.format(new Date());
-
-        values.put("createdate", createDate);
+        values.put("content", item.getName());
+        values.put("isCompleted", item.getIsCompleted());
+        values.put("createdate", item.getCreateDate());
         db.insert("todolist", null, values);
         db.close();
     }

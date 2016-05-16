@@ -20,10 +20,11 @@ import com.qs.jcj.addlistview.R;
 
 /**
  * Created by jcj on 16/4/28.
+ * 自定义下拉添加view
  */
 public class AddView extends LinearLayout {
-    private final static int RELEASE_ADD = 0;
-    private final static int PULL_ADD = 1;
+    private final static int RELEASE_ADD = 0;//释放添加状态
+    private final static int PULL_ADD = 1;//继续下拉添加状态
 
     private static int currentStatus = PULL_ADD;
     private View headView;
@@ -57,11 +58,14 @@ public class AddView extends LinearLayout {
         addTextView = (TextView) headView.findViewById(R.id.tv_add);
         headView.measure(0, 0);
         headerHeight = headView.getMeasuredHeight();
-        ViewConfiguration.get(getContext()).getScaledTouchSlop();
+      //  ViewConfiguration.get(getContext()).getScaledTouchSlop();
         addView(headView, 0);
         setOrientation(VERTICAL);
     }
 
+    /**
+     * 当所有子视图加载完成时调用此方法
+     */
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -136,6 +140,10 @@ public class AddView extends LinearLayout {
         set.start();
     }
 
+    /**
+     * 文字的动画
+     * @return
+     */
     @NonNull
     private ObjectAnimator getTextAnimator() {
         ObjectAnimator tv_animator = ObjectAnimator.ofFloat(tv,"translationY",0,300);
@@ -143,6 +151,10 @@ public class AddView extends LinearLayout {
         return tv_animator;
     }
 
+    /**
+     * 图片的动画
+     * @return
+     */
     private ObjectAnimator getImageAnimator() {
         Keyframe frame = Keyframe.ofFloat(0f, 0f);
         Keyframe frame1 = Keyframe.ofFloat(0.1f, 20f);
@@ -195,6 +207,10 @@ public class AddView extends LinearLayout {
         return ObjectAnimator.ofPropertyValuesHolder(imageView, holder1, holder2, holder3);
     }
 
+    /**
+     * 下拉文字的动画
+     * @return
+     */
     @NonNull
     private ObjectAnimator getAddTextAnimator() {
         PropertyValuesHolder holder1 = PropertyValuesHolder.ofFloat("scaleX", 0.5f, 1.0f, 1.5f);

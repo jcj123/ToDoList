@@ -2,6 +2,7 @@ package com.qs.jcj.addlistview.domain;
 
 /**
  * Created by jcj on 16/4/26.
+ * 待办事项的每一个条目
  */
 public class Item {
     private int id;
@@ -18,6 +19,12 @@ public class Item {
 
     public Item(int id, String name, int isCompleted, String createDate) {
         this.id = id;
+        this.name = name;
+        this.isCompleted = isCompleted;
+        this.createDate = createDate;
+    }
+
+    public Item(String name, int isCompleted, String createDate) {
         this.name = name;
         this.isCompleted = isCompleted;
         this.createDate = createDate;

@@ -25,7 +25,10 @@ import com.qs.jcj.addlistview.fragments.DayFragment;
 import com.qs.jcj.addlistview.fragments.MainFragment;
 import com.qs.jcj.addlistview.fragments.MonthFragment;
 import com.qs.jcj.addlistview.utils.AnimationUtils;
-import com.qs.jcj.addlistview.utils.ViewUtils;
+import com.qs.jcj.addlistview.utils.DatePickerDialogUtils;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
         NavigationView.OnNavigationItemSelectedListener {
@@ -40,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button share;//分享软件
     private boolean isMenuOpen;//fab的menu是否已经打开
     private DrawerLayout drawerLayout;//侧拉菜单栏
-    private ViewUtils viewUtils;
+    private DatePickerDialogUtils viewUtils;
 
     public MainFragment mainFragment;
     public DayFragment dayFragment;
@@ -133,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         search = (Button) findViewById(R.id.search);
         share = (Button) findViewById(R.id.share);
 
-        viewUtils = new ViewUtils(this);
+        viewUtils = new DatePickerDialogUtils(this);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -180,10 +183,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             switch (requestCode) {
                 case REQUEST_ADD:
                     final String item = data.getStringExtra("item");
-                    if (!TextUtils.isEmpty(item)) {
-                        Item i = new Item(item, 0);
-                        mainFragment.itemlist.add(i);
-                        mainFragment.dao.insert(item);
+                    final String showdate = data.getStringExtra("showdate");
+                    if (!TextUtils.isEmpty(item) && !TextUtils.isEmpty(showdate)) {
+                        Item i = new Item(item, 0, showdate);
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        final String createDate = sdf.format(new Date());
+                        if (showdate.equalsIgnoreCase(createDate)) {
+                            mainFragment.itemlist.add(i);
+                        }
+                        mainFragment.dao.insert(i);
                         if (mainFragment.toDoAdapter != null) {
                             mainFragment.toDoAdapter.notifyDataSetChanged();
                         }
@@ -237,5 +245,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public static enum FragmentStatus {
         Main, Day, Month
+    }
+
+    /**
+     * 点击返回键的操作
+     */
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        switch (currentStatus) {
+            case Main:
+                finish();
+                break;
+            case Day:
+            case Month:
+                currentStatus = FragmentStatus.Main;
+                initData();
+                break;
+        }
     }
 }
