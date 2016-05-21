@@ -17,6 +17,9 @@
             android:id="@+id/et_add"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:shadowColor="@color/colorAccent"
+            android:lines="5"
+            android:backgroundTint="@android:color/transparent"
             android:hint="在此输入待办事项，完成后，下拉屏幕添加"/>
 
         <ImageView
@@ -26,7 +29,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="100dp"
             android:clickable="true"
-            android:background="@drawable/ic_important_devices_black_24dp" />
+            android:background="@drawable/alarm41" />
 
         <TextView
             android:id="@+id/tv"

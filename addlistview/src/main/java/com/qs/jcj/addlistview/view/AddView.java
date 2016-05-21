@@ -1,6 +1,8 @@
 package com.qs.jcj.addlistview.view;
 
 import android.animation.AnimatorSet;
+import android.animation.FloatEvaluator;
+import android.animation.IntEvaluator;
 import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
@@ -35,9 +37,9 @@ public class AddView extends LinearLayout {
      */
     private boolean loadOnce;
     private MarginLayoutParams params;
-    private int downY;
+    private float downY;
     private ImageView imageView;
-    private int detalY;
+    private float detalY;
     private TextView tv;
 
     public AddView(Context context) {
@@ -89,15 +91,19 @@ public class AddView extends LinearLayout {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                downY = (int) event.getRawY();
+                downY =  event.getRawY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                int moveY = (int) event.getRawY();
+                float moveY =  event.getRawY();
                 detalY = moveY - downY;
                 if (detalY > 0) {
-                    int topMargin = -headerHeight + detalY / 2;
-                    params.topMargin = topMargin;
+                    float topMargin = -headerHeight + detalY / 2;
+                    params.topMargin = (int) topMargin;
                     headView.setLayoutParams(params);
+                    float percent = detalY/headerHeight/2;
+                    System.out.println("percent="+percent);
+                    animAddText(percent);
+
                     if (currentStatus == PULL_ADD && topMargin >= 0) {
                         currentStatus = RELEASE_ADD;
                         refreshView();
@@ -129,13 +135,13 @@ public class AddView extends LinearLayout {
 
 
     private void beginAnimation() {
-        ObjectAnimator animator = getAddTextAnimator();
+    //    ObjectAnimator animator = getAddTextAnimator();
 
         ObjectAnimator iv_animator =  getImageAnimator();
-        ObjectAnimator tv_animator = getTextAnimator();
+  //      ObjectAnimator tv_animator = getTextAnimator();
 
         AnimatorSet set = new AnimatorSet();
-        set.playTogether(animator, iv_animator,tv_animator);
+        set.playTogether( iv_animator);
         set.setDuration(400);
         set.start();
     }
@@ -144,12 +150,12 @@ public class AddView extends LinearLayout {
      * 文字的动画
      * @return
      */
-    @NonNull
-    private ObjectAnimator getTextAnimator() {
-        ObjectAnimator tv_animator = ObjectAnimator.ofFloat(tv,"translationY",0,300);
-        tv_animator.setInterpolator(new AccelerateInterpolator());
-        return tv_animator;
-    }
+//    @NonNull
+//    private ObjectAnimator getTextAnimator() {
+//        ObjectAnimator tv_animator = ObjectAnimator.ofFloat(tv,"translationY",0,300);
+//        tv_animator.setInterpolator(new AccelerateInterpolator());
+//        return tv_animator;
+//    }
 
     /**
      * 图片的动画
@@ -208,20 +214,30 @@ public class AddView extends LinearLayout {
     }
 
     /**
-     * 下拉文字的动画
+     * 文字的伴随动画
+     * @param percent
+     */
+    private void animAddText(float percent) {
+        addTextView.setScaleX(0.5f+0.5f*percent);
+        addTextView.setScaleY(0.5f+0.5f*percent);
+        addTextView.setAlpha(evaluate(percent,0f,1.0f));
+
+        tv.setTranslationY(0f+100*percent);
+        tv.setScaleX(0.5f+0.5f*percent);
+        tv.setScaleY(0.5f+0.5f*percent);
+        tv.setAlpha(evaluate(percent,0f,1.0f));
+    }
+    /**
+     * 估值器
+     * @param fraction
+     * @param startValue
+     * @param endValue
      * @return
      */
-    @NonNull
-    private ObjectAnimator getAddTextAnimator() {
-        PropertyValuesHolder holder1 = PropertyValuesHolder.ofFloat("scaleX", 0.5f, 1.0f, 1.5f);
-        PropertyValuesHolder holder2 = PropertyValuesHolder.ofFloat("scaleY", 0.5f, 1.0f, 1.5f);
-        PropertyValuesHolder holder3 = PropertyValuesHolder.ofFloat("alpha", 0.5f, 1.0f);
-
-        ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(addTextView, holder1, holder2, holder3);
-        animator.setInterpolator(new BounceInterpolator());
-        return animator;
+    public Float evaluate(float fraction, Number startValue, Number endValue) {
+        float startFloat = startValue.floatValue();
+        return startFloat + fraction * (endValue.floatValue() - startFloat);
     }
-
     private OnCommitItemLinstener linstener;
 
     public void setOnCommitItemLinstener(OnCommitItemLinstener linstener) {

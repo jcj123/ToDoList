@@ -45,6 +45,9 @@ public class ItemView extends FrameLayout {
         this.linstener = linstener;
     }
 
+    /**
+     * 条目状态监听接口
+     */
     public interface OnItemStatusLinstener {
         void delete(View foreView, boolean isItemCompleted);
 
@@ -54,7 +57,6 @@ public class ItemView extends FrameLayout {
     }
 
     class MyCallBack extends ViewDragHelper.Callback {
-
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
             return true;
@@ -117,8 +119,6 @@ public class ItemView extends FrameLayout {
                 if (linstener != null) {
                     linstener.delete(foreView, isItemCompleted);
                 }
-            } else if (foreView.getLeft() < 0 && backView.getLeft() > foreWidth - backWidth) {
-                foreView.setBackgroundColor(Color.rgb(255, 95, 90));
             }
             layoutViewWithAnimation();
         }
@@ -126,24 +126,38 @@ public class ItemView extends FrameLayout {
 
     }
 
+    /**
+     * 通过属性动画完成弹性滑动的效果
+     */
     private void layoutViewWithAnimation() {
         int left = 0;
 
-        ValueAnimator animator = ValueAnimator.ofInt(foreView.getLeft(),0);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                int value = (int) animation.getAnimatedValue();
-                foreView.layout(value,0,value+foreWidth,0+mHeight);
-            }
-        });
-        animator.setDuration(100);
-        animator.setInterpolator(new LinearInterpolator());
-        animator.start();
-        backView.layout(left + foreWidth, 0, left + foreWidth + backWidth, 0 + mHeight);
-        formerView.layout(left - formerWidth, 0, left, 0 + mHeight);
+//        ValueAnimator animator = ValueAnimator.ofInt(foreView.getLeft(),0);
+//        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator animation) {
+//                int value = (int) animation.getAnimatedValue();
+//                foreView.layout(value,0,value+foreWidth,0+mHeight);
+//            }
+//        });
+//        animator.setDuration(200);
+//        animator.setInterpolator(new LinearInterpolator());
+//        animator.start();
+//        backView.layout(left + foreWidth, 0, left + foreWidth + backWidth, 0 + mHeight);
+//        formerView.layout(left - formerWidth, 0, left, 0 + mHeight);
+
+        mDragHelper.smoothSlideViewTo(foreView,0,0);
+        postInvalidateOnAnimation();
+//        backView.layout(left + foreWidth, 0, left + foreWidth + backWidth, 0 + mHeight);
+//        formerView.layout(left - formerWidth, 0, left, 0 + mHeight);
     }
 
+    @Override
+    public void computeScroll() {
+        if (mDragHelper.continueSettling(true)) {
+            postInvalidateOnAnimation();
+        }
+    }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
@@ -151,6 +165,9 @@ public class ItemView extends FrameLayout {
         layoutView();
     }
 
+    /**
+     * 进行layout布局
+     */
     private void layoutView() {
         int left = 0;
         foreView.layout(left, 0, left + foreWidth, 0 + mHeight);
@@ -158,9 +175,18 @@ public class ItemView extends FrameLayout {
         formerView.layout(left - formerWidth, 0, left, 0 + mHeight);
     }
 
+    /**
+     * 有ViewDragHelper接管触摸事件所进行的配置
+     * @param ev
+     * @return
+     */
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-
+        final int action = ev.getAction();
+        if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
+            mDragHelper.cancel();
+            return false;
+        }
         return mDragHelper.shouldInterceptTouchEvent(ev);
     }
 

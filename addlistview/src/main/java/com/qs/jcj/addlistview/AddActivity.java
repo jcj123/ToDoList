@@ -20,11 +20,14 @@ import com.qs.jcj.addlistview.view.AddView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 public class AddActivity extends AppCompatActivity implements AddView.OnCommitItemLinstener, NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private EditText addEditText;
-    private AddView addView;
+    @BindView(R.id.av) AddView addView;
     private DrawerLayout drawerLayout;
     private ImageView timeIv;
     private SharedPreferences sp;
@@ -37,6 +40,7 @@ public class AddActivity extends AppCompatActivity implements AddView.OnCommitIt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
         initUI();
+
         initData();
         initLinstener();
     }
@@ -44,7 +48,10 @@ public class AddActivity extends AppCompatActivity implements AddView.OnCommitIt
 
     private void initUI() {
         sp = getSharedPreferences("config", MODE_PRIVATE);
-        addView = (AddView) findViewById(R.id.av);
+
+        ButterKnife.bind(this);
+
+     //   addView = (AddView) findViewById(R.id.av);
         addEditText = (EditText) findViewById(R.id.et_add);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         timeIv = (ImageView) findViewById(R.id.iv);
