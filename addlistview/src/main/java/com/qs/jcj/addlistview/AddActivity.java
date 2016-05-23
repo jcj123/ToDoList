@@ -24,12 +24,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class AddActivity extends AppCompatActivity implements AddView.OnCommitItemLinstener, NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+public class AddActivity extends AppCompatActivity implements AddView.OnCommitItemLinstener, View.OnClickListener {
 
     private EditText addEditText;
     @BindView(R.id.av) AddView addView;
-    private DrawerLayout drawerLayout;
-    private ImageView timeIv;
+    @BindView(R.id.iv) ImageView timeIv;
     private SharedPreferences sp;
     private String showdate;
     private String createDate;
@@ -40,7 +39,6 @@ public class AddActivity extends AppCompatActivity implements AddView.OnCommitIt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
         initUI();
-
         initData();
         initLinstener();
     }
@@ -51,12 +49,7 @@ public class AddActivity extends AppCompatActivity implements AddView.OnCommitIt
 
         ButterKnife.bind(this);
 
-     //   addView = (AddView) findViewById(R.id.av);
         addEditText = (EditText) findViewById(R.id.et_add);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        timeIv = (ImageView) findViewById(R.id.iv);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         createDate = sdf.format(new Date());
     }
@@ -98,20 +91,6 @@ public class AddActivity extends AppCompatActivity implements AddView.OnCommitIt
         finish();
     }
 
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.main:
-                Toast.makeText(this, "main", Toast.LENGTH_SHORT).show();
-                item.setChecked(true);
-                drawerLayout.closeDrawers();
-                break;
-            case R.id.setting:
-                Toast.makeText(this, "setting", Toast.LENGTH_SHORT).show();
-                break;
-        }
-        return true;
-    }
 
     @Override
     public void onClick(View v) {
