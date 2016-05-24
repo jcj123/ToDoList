@@ -70,7 +70,7 @@ public class DatePickerDialogUtils {
             String date = getFormatDate(year, monthOfYear, dayOfMonth);
             sp.edit().putString("date",date).commit();
             MainActivity mainActivity = (MainActivity) activity;
-            mainActivity.initData();
+            mainActivity.fragmentManage();
         }
     }
 
@@ -112,7 +112,7 @@ public class DatePickerDialogUtils {
             }
             sp.edit().putString("month",date).commit();
             MainActivity mainActivity = (MainActivity) activity;
-            mainActivity.initData();
+            mainActivity.fragmentManage();
         }
     }
 }

@@ -21,7 +21,7 @@ public class ItemView extends FrameLayout {
     private int foreWidth;
     private int backWidth;
 
-    private boolean isItemCompleted;//此条目任务是否完成
+//    private boolean isItemCompleted;//此条目任务是否完成
     private ViewDragHelper mDragHelper;
     private View formerView;
     private int formerWidth;
@@ -49,11 +49,12 @@ public class ItemView extends FrameLayout {
      * 条目状态监听接口
      */
     public interface OnItemStatusLinstener {
-        void delete(View foreView, boolean isItemCompleted);
+        void delete(View foreView);
 
-        void cancelCompleted(View foreView, boolean isItemCompleted);
-
-        void completed(View foreView, boolean isItemCompleted);
+//        void cancelCompleted(View foreView, boolean isItemCompleted);
+//
+//        void completed(View foreView, boolean isItemCompleted);
+        void changeStatus(View foreView);
     }
 
     class MyCallBack extends ViewDragHelper.Callback {
@@ -71,9 +72,11 @@ public class ItemView extends FrameLayout {
             if (backView.getLeft() < foreWidth - backWidth) {
                 //在拉拽过程中将条目颜色变为灰色
                 foreView.setBackgroundColor(Color.GRAY);
+            }else {
+                foreView.setBackgroundColor(Color.rgb(255, 95, 90));
             }
             if (formerView.getLeft() > 0) {
-                foreView.setBackgroundColor(Color.BLUE);
+                foreView.setBackgroundColor(Color.GREEN);
             }
             return left;
         }
@@ -90,34 +93,40 @@ public class ItemView extends FrameLayout {
         @Override
         public void onViewReleased(View releasedChild, float xvel, float yvel) {
             super.onViewReleased(releasedChild, xvel, yvel);
-            if (isItemCompleted) {
-                //已经完成条目，再拉状态变为未完成，颜色变红
-                if (formerView.getLeft() > 0) {
-                    if (linstener != null) {
-                        linstener.cancelCompleted(foreView, isItemCompleted);
-                    }
-                    isItemCompleted = false;
-
-                } else {
-                    foreView.setBackgroundColor(Color.GRAY);
-                }
-            } else {
-                //未完成条目，再拉状态变为已完成，颜色变灰
-                if (formerView.getLeft() > 0) {
-                    if (linstener != null) {
-                        linstener.completed(foreView, isItemCompleted);
-                    }
-                    isItemCompleted = true;
-
-                } else {
-                    foreView.setBackgroundColor(Color.rgb(255, 95, 90));
+//            if (isItemCompleted) {
+//                //已经完成条目，再拉状态变为未完成，颜色变红
+//                if (formerView.getLeft() > 0) {
+//                    if (linstener != null) {
+//                        linstener.cancelCompleted(foreView, isItemCompleted);
+//                    }
+//                    isItemCompleted = false;
+//
+//                } else {
+//                    foreView.setBackgroundColor(Color.GRAY);
+//                }
+//            } else {
+//                //未完成条目，再拉状态变为已完成，颜色变灰
+//                if (formerView.getLeft() > 0) {
+//                    if (linstener != null) {
+//                        linstener.completed(foreView, isItemCompleted);
+//                    }
+//                    isItemCompleted = true;
+//
+//                } else {
+//                    foreView.setBackgroundColor(Color.rgb(255, 95, 90));
+//                }
+//            }
+            if (formerView.getLeft() > 0) {
+                System.out.println("heh");
+                if (linstener!=null) {
+                    linstener.changeStatus(foreView);
                 }
             }
-
             if (backView.getLeft() < foreWidth - backWidth) {
+                System.out.println("delete");
                 //在放手时删除条目
                 if (linstener != null) {
-                    linstener.delete(foreView, isItemCompleted);
+                    linstener.delete(foreView);
                 }
             }
             layoutViewWithAnimation();
@@ -130,26 +139,8 @@ public class ItemView extends FrameLayout {
      * 通过属性动画完成弹性滑动的效果
      */
     private void layoutViewWithAnimation() {
-        int left = 0;
-
-//        ValueAnimator animator = ValueAnimator.ofInt(foreView.getLeft(),0);
-//        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator animation) {
-//                int value = (int) animation.getAnimatedValue();
-//                foreView.layout(value,0,value+foreWidth,0+mHeight);
-//            }
-//        });
-//        animator.setDuration(200);
-//        animator.setInterpolator(new LinearInterpolator());
-//        animator.start();
-//        backView.layout(left + foreWidth, 0, left + foreWidth + backWidth, 0 + mHeight);
-//        formerView.layout(left - formerWidth, 0, left, 0 + mHeight);
-
         mDragHelper.smoothSlideViewTo(foreView,0,0);
         postInvalidateOnAnimation();
-//        backView.layout(left + foreWidth, 0, left + foreWidth + backWidth, 0 + mHeight);
-//        formerView.layout(left - formerWidth, 0, left, 0 + mHeight);
     }
 
     @Override

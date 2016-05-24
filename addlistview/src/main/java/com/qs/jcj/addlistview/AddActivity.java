@@ -84,9 +84,7 @@ public class AddActivity extends AppCompatActivity implements AddView.OnCommitIt
         String item = addEditText.getText().toString();
         Intent intent = new Intent();
         intent.putExtra("item", item);
-        System.out.println("item="+item);
         intent.putExtra("showdate",showdate);
-        System.out.println("showdate="+showdate);
         setResult(RESULT_OK, intent);
         finish();
     }

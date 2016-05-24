@@ -109,4 +109,13 @@ public class ToDoDao {
         db.close();
         return list;
     }
+
+    public int getStatus(int id) {
+        db = helper.getReadableDatabase();
+        final Cursor cursor = db.rawQuery("select isCompleted from todolist where _id =?",
+                new String[]{Integer.toString(id)});
+        cursor.moveToNext();
+        int status = cursor.getInt(0);
+        return status;
+    }
 }

@@ -14,6 +14,7 @@ import com.qs.jcj.addlistview.domain.Item;
 import com.qs.jcj.addlistview.utils.MyApplication;
 import com.qs.jcj.addlistview.view.ItemView;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,23 +63,20 @@ public class ToDoAdapter extends BaseAdapter {
         mainTextView.setBackgroundColor(isCompleted == 0 ? Color.rgb(255, 95, 90) : Color.GRAY);
 
         view.setOnItemStatusLinstener(new ItemView.OnItemStatusLinstener() {
+
             @Override
-            public void delete(View foreView, boolean isItemCompleted) {
+            public void delete(View foreView) {
                 dao.delete(itemlist.get(position).getId());
                 itemlist.remove(position);
                 if (this != null) {
                     notifyDataSetChanged();
                 }
-                if (isItemCompleted) {
-                    foreView.setBackgroundColor(Color.GRAY);
-                } else {
-                    foreView.setBackgroundColor(Color.rgb(255, 95, 90));
-                }
             }
 
             @Override
-            public void cancelCompleted(View foreView, boolean isItemCompleted) {
-                if (isItemCompleted) {
+            public void changeStatus(View foreView) {
+                final int isStatus = dao.getStatus(itemlist.get(position).getId());
+                if (isStatus == 1) {
                     dao.update(itemlist.get(position).getId(), 0);
                     foreView.setBackgroundColor(Color.rgb(255, 95, 90));
                 } else {
@@ -86,19 +84,29 @@ public class ToDoAdapter extends BaseAdapter {
                     foreView.setBackgroundColor(Color.GRAY);
                 }
             }
-
-            @Override
-            public void completed(View foreView, boolean isItemCompleted) {
-                if (isItemCompleted) {
-                    dao.update(itemlist.get(position).getId(), 0);
-
-                    foreView.setBackgroundColor(Color.rgb(255, 95, 90));
-                } else {
-                    dao.update(itemlist.get(position).getId(), 1);
-
-                    foreView.setBackgroundColor(Color.GRAY);
-                }
-            }
+            //            @Override
+//            public void cancelCompleted(View foreView, boolean isItemCompleted) {
+//                if (isStatus == 1) {
+//                    dao.update(itemlist.get(position).getId(), 0);
+//                    foreView.setBackgroundColor(Color.rgb(255, 95, 90));
+//                } else {
+//                    dao.update(itemlist.get(position).getId(), 1);
+//                    foreView.setBackgroundColor(Color.GRAY);
+//                }
+//            }
+//
+//            @Override
+//            public void completed(View foreView, boolean isItemCompleted) {
+//                if (isItemCompleted) {
+//                    dao.update(itemlist.get(position).getId(), 0);
+//
+//                    foreView.setBackgroundColor(Color.rgb(255, 95, 90));
+//                } else {
+//                    dao.update(itemlist.get(position).getId(), 1);
+//
+//                    foreView.setBackgroundColor(Color.GRAY);
+//                }
+//            }
         });
         return view;
     }

@@ -101,7 +101,6 @@ public class AddView extends LinearLayout {
                     params.topMargin = (int) topMargin;
                     headView.setLayoutParams(params);
                     float percent = detalY/headerHeight/2;
-                    System.out.println("percent="+percent);
                     animAddText(percent);
 
                     if (currentStatus == PULL_ADD && topMargin >= 0) {

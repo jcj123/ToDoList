@@ -42,7 +42,11 @@ public class MainFragment extends BaseFragment {
         collapsingToolbar.setTitle(createDate);
 
         itemlist = dao.findByDay(createDate);
-        toDoAdapter = new ToDoAdapter(itemlist, getActivity(), dao);
-        myListView.setAdapter(toDoAdapter);
+        if (toDoAdapter == null) {
+            toDoAdapter = new ToDoAdapter(itemlist, getActivity(), dao);
+            myListView.setAdapter(toDoAdapter);
+        }else {
+            toDoAdapter.notifyDataSetChanged();
+        }
     }
 }

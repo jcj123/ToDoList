@@ -27,6 +27,7 @@ import com.qs.jcj.addlistview.fragments.MonthFragment;
 import com.qs.jcj.addlistview.utils.AnimationUtils;
 import com.qs.jcj.addlistview.utils.DatePickerDialogUtils;
 
+import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -56,8 +57,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initUI();
-        initData();
         initLinstener();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        fragmentManage();
     }
 
     private void initLinstener() {
@@ -121,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AnimationUtils.closeCircleAnimation(share, 1, total, radius);
     }
 
-
     /**
      * 初始化UI
      */
@@ -149,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 根据用户点击的不用选项显示不同的Fragment界面（main,day,month）
      */
-    public void initData() {
+    public void fragmentManage() {
         mainFragment = new MainFragment();
         dayFragment = new DayFragment();
         monthFragment = new MonthFragment();
@@ -226,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.main:
                 currentStatus = FragmentStatus.Main;
-                initData();
+                fragmentManage();
                 drawerLayout.closeDrawers();
                 break;
             case R.id.search_day:
@@ -260,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case Day:
             case Month:
                 currentStatus = FragmentStatus.Main;
-                initData();
+                fragmentManage();
                 break;
         }
     }
