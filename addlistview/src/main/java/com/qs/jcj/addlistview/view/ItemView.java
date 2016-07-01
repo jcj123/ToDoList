@@ -21,7 +21,6 @@ public class ItemView extends FrameLayout {
     private int foreWidth;
     private int backWidth;
 
-//    private boolean isItemCompleted;//此条目任务是否完成
     private ViewDragHelper mDragHelper;
     private View formerView;
     private int formerWidth;
@@ -50,11 +49,9 @@ public class ItemView extends FrameLayout {
      */
     public interface OnItemStatusLinstener {
         void delete(View foreView);
-
-//        void cancelCompleted(View foreView, boolean isItemCompleted);
-//
-//        void completed(View foreView, boolean isItemCompleted);
+        //改变foreview的状态，即颜色
         void changeStatus(View foreView);
+        void checkStatus(View foreView);
     }
 
     class MyCallBack extends ViewDragHelper.Callback {
@@ -72,15 +69,13 @@ public class ItemView extends FrameLayout {
             if (backView.getLeft() < foreWidth - backWidth) {
                 //在拉拽过程中将条目颜色变为灰色
                 foreView.setBackgroundColor(Color.GRAY);
-            }else {
-                foreView.setBackgroundColor(Color.rgb(255, 95, 90));
             }
             if (formerView.getLeft() > 0) {
                 foreView.setBackgroundColor(Color.GREEN);
             }
             return left;
         }
-
+        //当view的位置发生变化时调用
         @Override
         public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
             if (changedView == foreView) {
@@ -89,37 +84,19 @@ public class ItemView extends FrameLayout {
             }
             invalidate();
         }
-
+        //当释放view时调用此方法
         @Override
         public void onViewReleased(View releasedChild, float xvel, float yvel) {
             super.onViewReleased(releasedChild, xvel, yvel);
-//            if (isItemCompleted) {
-//                //已经完成条目，再拉状态变为未完成，颜色变红
-//                if (formerView.getLeft() > 0) {
-//                    if (linstener != null) {
-//                        linstener.cancelCompleted(foreView, isItemCompleted);
-//                    }
-//                    isItemCompleted = false;
-//
-//                } else {
-//                    foreView.setBackgroundColor(Color.GRAY);
-//                }
-//            } else {
-//                //未完成条目，再拉状态变为已完成，颜色变灰
-//                if (formerView.getLeft() > 0) {
-//                    if (linstener != null) {
-//                        linstener.completed(foreView, isItemCompleted);
-//                    }
-//                    isItemCompleted = true;
-//
-//                } else {
-//                    foreView.setBackgroundColor(Color.rgb(255, 95, 90));
-//                }
-//            }
             if (formerView.getLeft() > 0) {
-                System.out.println("heh");
+                System.out.println("hhhh");
                 if (linstener!=null) {
                     linstener.changeStatus(foreView);
+                }
+            }
+            if (backView.getLeft() < foreWidth || formerView.getLeft()<0) {
+                if (linstener != null) {
+                    linstener.checkStatus(foreView);
                 }
             }
             if (backView.getLeft() < foreWidth - backWidth) {

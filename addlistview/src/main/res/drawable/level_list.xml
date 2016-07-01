@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/shape1"
+        android:maxLevel="0"></item>
+    <item
+        android:drawable="@drawable/shape2"
+        android:maxLevel="1"
+        android:minLevel="1"></item>
+    <item
+        android:drawable="@drawable/shape3"
+        android:maxLevel="2"
+        android:minLevel="2"></item>
+    <item
+        android:drawable="@drawable/shape4"
+        android:maxLevel="3"
+        android:minLevel="3"></item>
+    <item
+        android:drawable="@drawable/shape5"
+        android:maxLevel="40"
+        android:minLevel="4"></item>
+
+</level-list>

@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:text="呵呵"
-        android:background="@android:color/holo_red_light"
+        android:background="@drawable/level_list"
         android:gravity="center"
         android:textSize="25sp"
         />
